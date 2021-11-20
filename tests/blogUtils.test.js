@@ -28,4 +28,10 @@ describe('Blog utilities', ()=> {
     
         expect(returnValue).toBe(22)
     })
+
+    test('Favorite', () => {
+        let returnValue = functionsToTest.favorite(blogs)
+    
+        expect(returnValue).toEqual(blogs[1])
+    })
 })
