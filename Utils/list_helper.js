@@ -20,9 +20,21 @@ const mostBlogs = ( blogs ) => {
     }, {author: 'None', blogs: 0 })
 }
 
+const mostLikes = ( blogs ) => {
+    let grouped = _.groupBy(blogs, 'author');
+    return Object.keys(grouped).reduce( (prev, key) => {
+        let totalLikes = grouped[key].reduce( (prev, current) => prev + current.likes, 0 )
+        if( prev.likes < totalLikes  )
+        return { author: key, likes: totalLikes }
+        else
+        return prev
+    }, {author: 'None', likes: 0 })
+}
+
 module.exports = {
     dummy,
     totalLikes,
     favorite,
-    mostBlogs
+    mostBlogs,
+    mostLikes
 }
