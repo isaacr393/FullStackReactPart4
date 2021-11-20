@@ -91,8 +91,8 @@ describe('Blog utilities', ()=> {
         let returnValue = functionsToTest.mostLikes(blogs)
         //console.log(returnValue)
         expect(returnValue).toEqual({
-            author: "Robert C. Martin",
-            likes: 12,
+            author: "Edsger W. Dijkstra",
+            likes: 17,
         })
     })
 })
