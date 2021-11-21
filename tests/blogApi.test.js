@@ -86,6 +86,22 @@ describe('Testing Api', () => {
 
         expect( response.body.likes ).toEqual(0)
     })
+
+    test('New Blog with no author or title must not be saved',async () => {
+        let newBlog = {            
+            url:'Jesttesting.com',
+            likes: 5
+        }
+        
+        const response = await api.post('/api/blogs')
+        .send(newBlog)
+        .expect(400)
+        .expect('Content-Type', /application\/json/)
+
+        expect( response.body.error ).toBeDefined()
+
+        
+    })
 })
 
 afterAll(() => {
