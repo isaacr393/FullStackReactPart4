@@ -100,8 +100,23 @@ describe('Testing Api', () => {
 
         expect( response.body.error ).toBeDefined()
 
-        
+
     })
+
+    test('Blog should be deleted ',async () => {
+        
+        const currentBlog = await api.get('/api/blogs')
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+
+        const response = await api.delete('/api/blogs/'+currentBlog.body[0].id)
+        .expect(204)
+
+        const afterDeleteBlog = await api.get('/api/blogs')
+
+        expect(afterDeleteBlog.body.length).toBe(initialBlogs.length -1 )
+
+    },10000)
 })
 
 afterAll(() => {
