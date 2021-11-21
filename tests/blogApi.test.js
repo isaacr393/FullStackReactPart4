@@ -45,7 +45,30 @@ describe('Testing Api', () => {
         .expect(200)
         .expect('Content-Type', /application\/json/)
 
-        expect( response.body[0]._id ).toBeDefined()
+        expect( response.body[0].id ).toBeDefined()
+
+    })
+
+    test('New blog is created', async () => {
+        let newBlog = {
+            title: 'Created From Jest',
+            author:'Jest',
+            url:'Jesttesting.com',
+            likes:20
+        }
+        
+        const response = await api.post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+
+        expect( response.body.title ).toBe('Created From Jest')
+
+        const blogsRegistered = await api.get('/api/blogs')
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+        
+        expect(blogsRegistered.body.length).toBe(initialBlogs.length + 1)
 
     })
 })
