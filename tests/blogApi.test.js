@@ -39,6 +39,15 @@ describe('Testing Api', () => {
         expect( response.body.length ).toBe(initialBlogs.length)
 
     })
+
+    test('Unique identifies should be id', async () => {
+        const response = await api.get('/api/blogs/')
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+
+        expect( response.body[0]._id ).toBeDefined()
+
+    })
 })
 
 afterAll(() => {
