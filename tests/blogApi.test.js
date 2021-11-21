@@ -71,6 +71,21 @@ describe('Testing Api', () => {
         expect(blogsRegistered.body.length).toBe(initialBlogs.length + 1)
 
     })
+
+    test('New Blog with no likes must have 0 likes',async () => {
+        let newBlog = {
+            title: 'No likest title',
+            author:'NoLiked',
+            url:'Jesttesting.com',
+        }
+        
+        const response = await api.post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+
+        expect( response.body.likes ).toEqual(0)
+    })
 })
 
 afterAll(() => {
