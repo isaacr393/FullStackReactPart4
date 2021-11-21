@@ -117,6 +117,28 @@ describe('Testing Api', () => {
         expect(afterDeleteBlog.body.length).toBe(initialBlogs.length -1 )
 
     },10000)
+
+    test('Blog should be updated ',async () => {
+        
+        const currentBlog = await api.get('/api/blogs')
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+
+        let updateBlog = currentBlog.body[0]
+        updateBlog.likes = 30
+
+        const response = await api.put('/api/blogs/'+updateBlog.id)
+        .send(updateBlog)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+
+        let afterUpdateBlogs = await api.get('/api/blogs')
+
+        afterUpdateBlogs = afterUpdateBlogs.body.map(blog => blog.likes)
+
+        expect(afterUpdateBlogs).toContainEqual(30)
+
+    },10000)
 })
 
 afterAll(() => {
