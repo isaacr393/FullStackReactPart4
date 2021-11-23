@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt')
 
 userRouter.get('/', async (req, res, next) => {
     try{
-        const users = await User.find({})
+        const users = await User.find({}).populate('notes')
         res.json(users)
     }catch(ex){
         next(ex)

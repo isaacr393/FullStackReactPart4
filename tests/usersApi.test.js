@@ -19,12 +19,12 @@ const initialUsers = [
 
 
 describe('Test For users', () => {
-    beforeEach( async () =>{
+    beforeAll( async () =>{
         await User.deleteMany({})
         let users = initialUsers.map( user => new User(user))
         let savedUsers = users.map( user => user.save() )
         await Promise.all(savedUsers)
-    },15000)
+    },25000)
 
     test('Return all users', async () => {
         const users = await api.get('/api/users')

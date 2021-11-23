@@ -11,25 +11,25 @@ const initialBlogs = [
         url: "thisisfakeurl.com",
         likes: 10,
         author: "genesis",
-        id: "6199230e348d95351b31d5ac"
     },
     {
         title: "First app",
         author: "Isaac",
         url: "thisisfakeurl.com",
         likes: 10,
-        id: "619a769f5ce6f7aad953007b"
     }
 ]
 
 
 describe('Testing Api', () => {
-    beforeEach( async () => {
+    beforeAll( async () => {
+        const users = await api.get('/api/users')
         await Blog.deleteMany({})
-        let createdBlogs = initialBlogs.map( blog => new Blog(blog))
+        let blogsWithUser = initialBlogs.map( blog => ({...blog, user:users.body[0].id}))
+        let createdBlogs = blogsWithUser.map( blog => new Blog(blog))
         let savedBlogs = createdBlogs.map( blog => blog.save() )
         await Promise.all(savedBlogs)
-    })
+    },20000)
 
     test('GET api should return all registers', async () => {
         const response = await api.get('/api/blogs/')
@@ -50,11 +50,13 @@ describe('Testing Api', () => {
     })
 
     test('New blog is created', async () => {
+        const users = await api.get('/api/users')
         let newBlog = {
             title: 'Created From Jest',
             author:'Jest',
             url:'Jesttesting.com',
-            likes:20
+            likes:20,
+            user:users.body[0].id
         }
         
         const response = await api.post('/api/blogs')
@@ -70,13 +72,15 @@ describe('Testing Api', () => {
         
         expect(blogsRegistered.body.length).toBe(initialBlogs.length + 1)
 
-    })
+    },10000)
 
     test('New Blog with no likes must have 0 likes',async () => {
+        const users = await api.get('/api/users')
         let newBlog = {
             title: 'No likest title',
             author:'NoLiked',
             url:'Jesttesting.com',
+            user:users.body[0].id
         }
         
         const response = await api.post('/api/blogs')
@@ -85,7 +89,7 @@ describe('Testing Api', () => {
         .expect('Content-Type', /application\/json/)
 
         expect( response.body.likes ).toEqual(0)
-    })
+    },10000)
 
     test('New Blog with no author or title must not be saved',async () => {
         let newBlog = {            
@@ -114,7 +118,7 @@ describe('Testing Api', () => {
 
         const afterDeleteBlog = await api.get('/api/blogs')
 
-        expect(afterDeleteBlog.body.length).toBe(initialBlogs.length -1 )
+        expect(afterDeleteBlog.body.length).toBe(3 )
 
     },10000)
 
@@ -126,7 +130,7 @@ describe('Testing Api', () => {
 
         let updateBlog = currentBlog.body[0]
         updateBlog.likes = 30
-
+        updateBlog.user = updateBlog.user.id
         const response = await api.put('/api/blogs/'+updateBlog.id)
         .send(updateBlog)
         .expect(200)
