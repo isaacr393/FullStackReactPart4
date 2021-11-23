@@ -7,10 +7,12 @@ const api = supertest(app)
 const initialUsers = [
     {
         "user": "Isaac",
+        "username": "Isaac",
         "password": "123",
     },
     {
         "user": "Genesis",
+        "username": "Genesis",
         "password": "321",
     }
 ]
@@ -30,11 +32,12 @@ describe('Test For users', () => {
         .expect('Content-Type', /application\/json/)
 
         expect(users.body.length).toBe(initialUsers.length)
-    },10000)
+    },15000)
 
     test('User with same user should not be allowed ', async () => {
         let newUser = {
             "user": "Isaac",
+            "username": "Isaac",
             "password": "321",
         }
         await api.post('/api/users')
@@ -43,9 +46,23 @@ describe('Test For users', () => {
 
     })
 
+    test('Invalid user should not be created', async () => {
+        let newUser = {
+            "user": "Cri",
+            "username": "Cr",
+            "password": "456",
+        }
+
+        let savedUser = await api.post('/api/users')
+        .send(newUser)
+        .expect(400)
+
+    })
+
     test('New user is added', async () => {
         let newUser = {
             "user": "Cristina",
+            "username": "Cristina",
             "password": "456",
         }
 
