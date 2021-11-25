@@ -38,10 +38,24 @@ blogsRouter.post('/', tokenRequired, async (request, response, next) => {
     }
 })
 
-blogsRouter.delete('/:id', async (req, res, next) => {
+blogsRouter.delete('/:id', tokenRequired, async (req, res, next) => {
     try{
-        await Blog.findByIdAndRemove(req.params.id)
-        res.status(204).end()
+        const userToken = req.body.userToken
+        if( !userToken ){
+            res.status(401).send({error:'Authentication required'})
+        }         
+        let decodedToken = jwt.verify(userToken, process.env.SECRET)
+
+        const user = await User.findById( decodedToken.id )  
+        const blog = await Blog.findById(req.params.id)
+
+        if( blog.user.toString() === user._id.toString()){
+            await Blog.findByIdAndRemove(req.params.id)
+            res.status(204).end()
+        }else{
+            return res.json({error:'Authentication failed'})  
+        }
+        
     }catch( ex ){
         next(ex)
     }
