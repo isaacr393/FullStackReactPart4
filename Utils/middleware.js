@@ -1,5 +1,7 @@
 const morgan = require('morgan')
 const logger = require('./logger')
+const User = require('../Models/User')
+const jwt = require('jsonwebtoken')
 
 const requestLogger = (token, req, res) => {
     logger.info(` ${req.method} - ${req.url} - ${JSON.stringify(req.body)} - ${token['response-time'](req, res)} -ms `)
@@ -34,11 +36,28 @@ const tokenRequired = (req, res, next) => {
   next()
 }
 
+const userExtractor = async (req, res, next) => {
+  if( !req.body.userToken ){
+    next()
+  }else{
+    try{
+      let decodedToken = jwt.verify(req.body.userToken, process.env.SECRET)
+      const user = await User.findById( decodedToken.id ) 
+      req.user = user
+      next()
+    }catch(ex){
+      next(ex)
+    }
+  }
+
+}
+
 const requestLog = morgan(requestLogger)
 
 module.exports = {
     requestLog,
     unknownEndpoint,
     errorHandler,
-    tokenRequired
+    tokenRequired,
+    userExtractor
 }
