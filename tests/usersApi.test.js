@@ -9,11 +9,6 @@ const initialUsers = [
         "user": "Isaac",
         "username": "Isaac",
         "password": "123",
-    },
-    {
-        "user": "Genesis",
-        "username": "Genesis",
-        "password": "321",
     }
 ]
 
@@ -21,9 +16,14 @@ const initialUsers = [
 describe('Test For users', () => {
     beforeAll( async () =>{
         await User.deleteMany({})
-        let users = initialUsers.map( user => new User(user))
+
+        //Register One user
+        let savedUser = await api.post('/api/users')
+        .send(initialUsers[0])
+
+        /* let users = initialUsers.map( user => new User(user))
         let savedUsers = users.map( user => user.save() )
-        await Promise.all(savedUsers)
+        await Promise.all(savedUsers)*/
     },25000)
 
     test('Return all users', async () => {

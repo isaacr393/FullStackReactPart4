@@ -44,7 +44,7 @@ blogsRouter.delete('/:id',userExtractor,  async (req, res, next) => {
             await Blog.findByIdAndRemove(req.params.id)
             res.status(204).end()
         }else{
-            return res.json({error:'Authentication failed'})  
+            return res.status(401).send({error:'Authentication failed'})  
         }
         
     }catch( ex ){
@@ -52,11 +52,19 @@ blogsRouter.delete('/:id',userExtractor,  async (req, res, next) => {
     }
 })
 
-blogsRouter.put('/:id', async (req, res, next) => {
+blogsRouter.put('/:id',userExtractor, async (req, res, next) => {
     try{
+
+        const user = req.user
+        const blog = await Blog.findById(req.params.id)
         let newBlog = req.body
-        let blog = await Blog.findByIdAndUpdate(req.params.id, newBlog,{ new:true, runValidators:true })
-        res.status(200).json(blog)
+
+        if( blog.user.toString() === user._id.toString()){
+            let blog = await Blog.findByIdAndUpdate(req.params.id, newBlog,{ new:true, runValidators:true })
+            res.status(200).json(blog)
+        }else{
+            return res.status(401).send({error:'Authentication failed'})  
+        }                
     }catch( ex ){
         next(ex)
     }
