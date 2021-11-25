@@ -21,11 +21,20 @@ const errorHandler = (error, request, response, next) => {
     next(error)
   }
   
+const tokenRequired = (req, res, next) => {
+  const authorization = req.get('authorization')
+  
+  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+    req.body.userToken = authorization.substring(7)  
+  }  
+  next()
+}
 
 const requestLog = morgan(requestLogger)
 
 module.exports = {
     requestLog,
     unknownEndpoint,
-    errorHandler
+    errorHandler,
+    tokenRequired
 }
